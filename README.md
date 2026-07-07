@@ -4,4 +4,4 @@
 
 <img width="512" height="123" alt="AVR128DB48" src="https://github.com/user-attachments/assets/8e9ac0c5-195f-4d6e-a551-5629990f595e" />
 
-- **Chip_Music** - 4-voice lo-fi chip music generator / synthesizer
+**Chip_Music** - 4-voice lo-fi chip music generator / synthesizer
