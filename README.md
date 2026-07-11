@@ -7,3 +7,4 @@
 - **DDS_Sine** - DDS sinewave generator
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **IFFT_Gong** - Spectral frequency synthesizer like a gong and percussion
+- **IFFT_Glass** - Spectral frequency synthesizer like a random glass cluster
