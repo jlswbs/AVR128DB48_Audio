@@ -9,6 +9,8 @@
 #define N (1 << LOG2_N)
 
 static int16_t sin_table_q15[257];
+unsigned long last_trig = 0;
+unsigned long last_decay = 0;
 
 void get_twiddle(uint16_t idx, int16_t* c, int16_t* s) {
 
@@ -141,7 +143,8 @@ void setup() {
     sin_table_q15[256] = 32767;
 
     PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-    VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
+    //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
+    VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
     DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
 
     TCB0.CTRLA = 0;
@@ -151,9 +154,6 @@ void setup() {
     TCB0.CTRLA = TCB_ENABLE_bm | TCB_CLKSEL_CLKDIV1_gc;
 
 }
-
-unsigned long last_trig = 0;
-unsigned long last_decay = 0;
 
 void loop() {
 
