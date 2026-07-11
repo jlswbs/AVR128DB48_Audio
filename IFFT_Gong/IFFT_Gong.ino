@@ -98,10 +98,10 @@ void ifft_agnostic(int16_t* re, int16_t* im) {
 
 }
 
-void calculate_next(int16_t* re) {
+void calculate_next(int16_t* real_q15) {
 
     for (int i = 0; i < N; i++) {
-        re[i] = 0;
+        real_q15[i] = 0;
         imag_q15[i] = 0;
     }
 
@@ -119,15 +119,16 @@ void calculate_next(int16_t* re) {
             int16_t cos_p, sin_p;
             get_twiddle(phase_accumulator[bin], &cos_p, &sin_p);
 
-            re[bin] = ((int32_t)amp * cos_p) >> 15;
+            real_q15[bin] = ((int32_t)amp * cos_p) >> 15;
             imag_q15[bin] = ((int32_t)amp * sin_p) >> 15;
 
-            re[N - bin] = re[bin];
+            real_q15[N - bin] = real_q15[bin];
             imag_q15[N - bin] = -imag_q15[bin];
+            
         }
     }
 
-    ifft_agnostic(re, imag_q15);
+    ifft_agnostic(real_q15, imag_q15);
 
 }
 
