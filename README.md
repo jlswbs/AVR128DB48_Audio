@@ -5,6 +5,7 @@
 <img width="512" height="123" alt="AVR128DB48" src="https://github.com/user-attachments/assets/8e9ac0c5-195f-4d6e-a551-5629990f595e" />
 
 - **DDS_Sine** - DDS sinewave generator
+- **DDS_Sine2** - DDS sinewave generator with linear interpolation
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **IFFT_Gong** - Spectral frequency synthesizer like a gong and percussion
 - **IFFT_Glass** - Spectral frequency synthesizer like a random glass cluster
