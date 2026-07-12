@@ -1,10 +1,10 @@
-// DDS sinewave generator //
+// DDS sinewave generator (linear interpolation) //
 
 #define SAMPLE_RATE 44100
 
-float freq = 220.0f;
+float freq = 220.f;
 
-uint16_t sineTable[256];
+uint16_t sineTable[257];
 
 volatile uint32_t phaseAccumulator = 0;
 volatile uint32_t phaseIncrement = 0;
@@ -14,11 +14,11 @@ void setFrequency(float freq) { phaseIncrement = (uint32_t)(((uint64_t)freq << 3
 void setup() {
 
   for (int i = 0; i < 256; i++) {
-
     float angle = (2.0 * M_PI * i) / 256.0;
     sineTable[i] = (uint16_t)((sin(angle) + 1.0) * 511.5);
-
   }
+
+  sineTable[256] = sineTable[0];
 
   PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
   //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
@@ -44,7 +44,12 @@ ISR(TCB0_INT_vect) {
   phaseAccumulator += phaseIncrement;
 
   uint8_t tableIndex = phaseAccumulator >> 24;
-  uint16_t val = sineTable[tableIndex];
+  uint8_t fraction = (phaseAccumulator >> 16) & 0xFF;
+  uint16_t y1 = sineTable[tableIndex];
+  uint16_t y2 = sineTable[tableIndex + 1];
+
+  int32_t diff = (int32_t)y2 - (int32_t)y1;
+  uint16_t val = y1 + ((diff * fraction) >> 8);
 
   DAC0.DATAL = (val & 0x03) << 6;
   DAC0.DATAH = val >> 2;
