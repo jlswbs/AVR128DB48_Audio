@@ -10,3 +10,4 @@
 - **IFFT_Gong** - Spectral frequency synthesizer like a gong and percussion
 - **IFFT_Glass** - Spectral frequency synthesizer like a random glass cluster
 - **Pokey_Like** - Atari Pokey like chiptune generator
+- **MOD_Player** - Amiga Module player
