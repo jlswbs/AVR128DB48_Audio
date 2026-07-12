@@ -5,6 +5,8 @@
 #define PPQN        4
 #define TRIG_MS     (60000UL / (BPM * PPQN))
 
+#define DECAY       1900
+
 #define LOG2_N 6
 #define N (1 << LOG2_N)
 
@@ -165,7 +167,7 @@ void loop() {
         int density = random(20, 80);
         for (int i = 1; i < N / 2; i++) {
             if (random(100) < density) {
-                bin_amplitudes[i] = random(6000, 10000) / i;
+                bin_amplitudes[i] = random(3000, 8000) / i;
             }
         }
     }
@@ -177,7 +179,7 @@ void loop() {
             int16_t current_amp = bin_amplitudes[bin];
 
             if (current_amp > 0) {
-                int32_t next_amp = ((int32_t)current_amp * 1950) >> 11;
+                int32_t next_amp = ((int32_t)current_amp * DECAY) >> 11;
                 bin_amplitudes[bin] = (next_amp < 10) ? 0 : (int16_t)next_amp;
             }
         }
