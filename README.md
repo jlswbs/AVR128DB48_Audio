@@ -14,3 +14,4 @@
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **Pokey_Like** - Atari Pokey like chiptune generator
 - **MOD_Player** - Amiga Module player
+- **Chip_Glitch** - Chip glitch sound engine with reverse delay
