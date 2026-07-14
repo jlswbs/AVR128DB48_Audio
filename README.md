@@ -10,7 +10,7 @@
 - **DDS_Sine2** - DDS sinewave generator with linear interpolation
 - **IFFT_Gong** - Spectral frequency synthesizer like a gong and percussion
 - **IFFT_Glass** - Spectral frequency synthesizer like a random glass cluster
-- **Chiptune_Player** - Chiptune player engine
+- **Chiptune_Play** - Chiptune player engine
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **Pokey_Like** - Atari Pokey like chiptune generator
 - **MOD_Player** - Amiga Module player
