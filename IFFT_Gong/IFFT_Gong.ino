@@ -1,17 +1,11 @@
 // IFFT spectral gong engine //
 
-#define SAMPLE_RATE 44100
-#define BPM         60
-#define PPQN        4
-#define TRIG_MS     (60000UL / (BPM * PPQN))
-
-#define DECAY       1900
+#define SAMPLE_RATE 24000
 
 #define LOG2_N 6
 #define N (1 << LOG2_N)
 
 static int16_t sin_table_q15[257];
-unsigned long last_trig = 0;
 unsigned long last_decay = 0;
 
 void get_twiddle(uint16_t idx, int16_t* c, int16_t* s) {
@@ -90,10 +84,10 @@ void ifft_agnostic(int16_t* re, int16_t* im) {
                 int32_t tr = ((int32_t)re[match] * w_re - (int32_t)im[match] * w_im) >> 15;
                 int32_t ti = ((int32_t)re[match] * w_im + (int32_t)im[match] * w_re) >> 15;
 
-                re[match] = (re[pair] - tr) >> 1;
-                im[match] = (im[pair] - ti) >> 1;
-                re[pair] = (re[pair] + tr) >> 1;
-                im[pair] = (im[pair] + ti) >> 1;
+                re[match] = (re[pair] - tr);
+                im[match] = (im[pair] - ti);
+                re[pair] = (re[pair] + tr);
+                im[pair] = (im[pair] + ti);
             }
         }
     }
@@ -111,7 +105,7 @@ void calculate_next(int16_t* real_q15) {
 
         int16_t amp = bin_amplitudes[bin];
 
-        if (amp > 10) {
+        if (amp > 5) {
 
             phase_accumulator[bin] += bin;
 
@@ -160,27 +154,22 @@ void setup() {
 
 void loop() {
 
-    unsigned long now = millis();
-
-    if (now - last_trig >= TRIG_MS) {
-        last_trig = now;
+    if (random(1000) < 1) {
         int density = random(20, 80);
         for (int i = 1; i < N / 2; i++) {
             if (random(100) < density) {
-                bin_amplitudes[i] = random(3000, 8000) / i;
+                bin_amplitudes[i] = random(8, 256) / i;
             }
         }
     }
 
-    if (now - last_decay >= 10) {
-        last_decay = now;
+    if (millis() - last_decay >= 10) { 
+        last_decay = millis();
 
-        for (int bin = 0; bin < N / 2; bin++) {
-            int16_t current_amp = bin_amplitudes[bin];
-
-            if (current_amp > 0) {
-                int32_t next_amp = ((int32_t)current_amp * DECAY) >> 11;
-                bin_amplitudes[bin] = (next_amp < 10) ? 0 : (int16_t)next_amp;
+        for (int i = 0; i < N / 2; i++) {
+            if (bin_amplitudes[i] > 0) {
+                bin_amplitudes[i] = (bin_amplitudes[i] * 99) / 100;
+                if (bin_amplitudes[i] < 5) bin_amplitudes[i] = 0;
             }
         }
     }
@@ -191,7 +180,6 @@ void loop() {
         } else {
             calculate_next(audio_buffer_0);
         }
-
         buffer_needs_calc = false;
     }
 
@@ -207,7 +195,7 @@ ISR(TCB0_INT_vect) {
         val = audio_buffer_1[sample_index];
     }
 
-    int32_t sample = val + 512;
+    int32_t sample = (val >> 2) + 512;
 
     if (sample < 0) sample = 0;
     if (sample > 1023) sample = 1023;
