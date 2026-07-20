@@ -104,7 +104,7 @@ void calculate_next(int16_t* real_q15) {
 
         int16_t amp = bin_amplitudes[bin];
 
-        if (amp > 10) {
+        if (amp > 5) {
 
             phase_accumulator[bin] += bin;
 
