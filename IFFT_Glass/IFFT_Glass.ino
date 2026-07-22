@@ -52,7 +52,7 @@ volatile int sample_index = 0;
 volatile bool buffer_needs_calc = true;
 
 volatile int16_t bin_amplitudes[N / 2] = {0};
-uint16_t phase_accumulator[N / 2] = {0};
+uint32_t phase_accumulator[N / 2] = {0};
 
 void ifft_agnostic(int16_t* re, int16_t* im) {
 
@@ -106,10 +106,8 @@ void calculate_next(int16_t* real_q15) {
 
         if (amp > 5) {
 
-            phase_accumulator[bin] += bin;
-
-            if (phase_accumulator[bin] >= N)
-                phase_accumulator[bin] -= N;
+            phase_accumulator[bin] += (uint32_t)bin << LOG2_N;
+            phase_accumulator[bin] &= 1023;
 
             int16_t cos_p, sin_p;
             get_twiddle(phase_accumulator[bin], &cos_p, &sin_p);
