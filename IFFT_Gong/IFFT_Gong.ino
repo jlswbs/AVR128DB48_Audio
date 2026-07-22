@@ -2,7 +2,7 @@
 
 #define SAMPLE_RATE 24000
 
-#define LOG2_N 6
+#define LOG2_N 7
 #define N (1 << LOG2_N)
 
 static int16_t sin_table_q15[257];
@@ -53,7 +53,7 @@ volatile int sample_index = 0;
 volatile bool buffer_needs_calc = true;
 
 volatile int16_t bin_amplitudes[N / 2] = {0};
-uint16_t phase_accumulator[N / 2] = {0};
+uint32_t phase_accumulator[N / 2] = {0};
 
 void ifft_agnostic(int16_t* re, int16_t* im) {
 
@@ -107,10 +107,8 @@ void calculate_next(int16_t* real_q15) {
 
         if (amp > 5) {
 
-            phase_accumulator[bin] += bin;
-
-            if (phase_accumulator[bin] >= N)
-                phase_accumulator[bin] -= N;
+            phase_accumulator[bin] += (uint32_t)bin << LOG2_N;
+            phase_accumulator[bin] &= 1023;
 
             int16_t cos_p, sin_p;
             get_twiddle(phase_accumulator[bin], &cos_p, &sin_p);
@@ -158,7 +156,7 @@ void loop() {
         int density = random(20, 80);
         for (int i = 1; i < N / 2; i++) {
             if (random(100) < density) {
-                bin_amplitudes[i] = random(8, 256) / i;
+                bin_amplitudes[i] = random(8, 320) / i;
             }
         }
     }
