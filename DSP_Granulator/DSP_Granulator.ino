@@ -4,6 +4,7 @@
 #define BUFFER_SIZE   256 
 #define DELAY_BUFFER  512
 #define WINDOW_EDGE   8
+#define BPM           120
 
 uint16_t audioBuffer[BUFFER_SIZE];
 uint16_t delayBuffer[DELAY_BUFFER];
@@ -30,7 +31,8 @@ void setup() {
 
   for (int i = 0; i < BUFFER_SIZE; i++) {
     float t = (float)i / BUFFER_SIZE * 2 * PI;
-    audioBuffer[i] = (uint16_t)(512.0f + 511.0f * tanhf(6.0f * sinf(t)));
+    float noise = ((random(0, 1000) / 500.0f) - 1.0f) * 0.3f;
+    audioBuffer[i] = (uint16_t)(512.0f + 511.0f * tanhf(6.0f * (sinf(t) * (1.0f + noise))));
   }
 
   TCB0.CTRLA = 0; 
@@ -65,7 +67,8 @@ void loop() {
   grainSpeed = (uint16_t)((float)baseSpeed + wowMod) << 6;
   currentDelayMax = 510 + (int16_t)flutterMod;
 
-  delay(120);
+  float tempo = 60000.0 / BPM;
+  delay((int)(tempo / 4));
 
 }
 
@@ -113,7 +116,7 @@ ISR(TCB0_INT_vect) {
   delayBuffer[delayIndex] = (uint16_t)mixedSample;
   
   delayIndex++;
-  if (delayIndex >= currentDelayMax) delayIndex = 0;
+  if (delayIndex >= currentDelayMax || delayIndex >= DELAY_BUFFER) delayIndex = 0;
 
   uint16_t outputSample = (uint16_t)mixedSample;
   if (outputSample > 1023) outputSample = 1023;
