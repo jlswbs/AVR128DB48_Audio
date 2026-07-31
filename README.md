@@ -19,3 +19,4 @@
 - **DSP_GrainPhase** - Granular phase-distortion glitch
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
+- **Kick_Fold** - Kick drum synth with wavefolder
