@@ -20,3 +20,4 @@
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
 - **Kick_Fold** - Kick drum synth with wavefolder
+- **Grain_Sampler** -Grain sampler with comb delay
