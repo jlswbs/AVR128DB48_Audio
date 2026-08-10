@@ -1,7 +1,7 @@
 # AVR128DB48 CURIOSITY NANO EVALUATION KIT
 
 - https://www.microchip.com/en-us/development-tool/ev35l43a
-- 128KB Flash, 16KB SRAM, 24MHz MCU
+- AVR 8bit MCU, 128KB Flash, 16KB SRAM, 24MHz
 - PD6 pin = 10bit DAC audio output
 - PD2 pin = Opamp buffered audio output
 - PD0 pin = experimental entropy (from unmuxed ADC)
