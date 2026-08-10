@@ -2,9 +2,9 @@
 
 - https://www.microchip.com/en-us/development-tool/ev35l43a
 - 128KB Flash, 16KB SRAM, 24MHz MCU
-- PD6 pin 10bit DAC audio output
-- PD2 pin Opamp buffered audio output
-- PD0 experimental entropy (from unmuxed ADC)
+- PD6 pin = 10bit DAC audio output
+- PD2 pin = Opamp buffered audio output
+- PD0 pin = experimental entropy (from unmuxed ADC)
 
 <img width="512" height="123" alt="AVR128DB48" src="https://github.com/user-attachments/assets/8e9ac0c5-195f-4d6e-a551-5629990f595e" />
 
