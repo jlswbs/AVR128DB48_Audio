@@ -2,14 +2,17 @@
 
 - https://www.microchip.com/en-us/development-tool/ev35l43a
 - 128KB Flash, 16KB SRAM, 24MHz MCU
-- 10bit buffered audio DAC pin PD6
+- PD6 pin 10bit DAC audio output
+- PD2 pin Opamp buffered audio output
+- PD0 experimental entropy (from unmuxed ADC)
 
 <img width="512" height="123" alt="AVR128DB48" src="https://github.com/user-attachments/assets/8e9ac0c5-195f-4d6e-a551-5629990f595e" />
 
 - **DDS_Sine** - DDS sinewave generator
 - **DDS_Sine2** - DDS sinewave generator with linear interpolation
-- **IFFT_Gong** - Spectral frequency synthesizer like a gong and percussion
-- **IFFT_Glass** - Spectral frequency synthesizer like a random glass cluster
+- **IFFT_Gong** - Spectral gong base a fast fourier transform
+- **IFFT_Glass** - Spectral glass cluster base a fast fourier transform
+- **IFFT_Crystal** - Spectral crystal cluster base a fast fourier transform
 - **Chiptune_Play** - Chiptune player engine
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **Pokey_Like** - Atari Pokey like chiptune generator
