@@ -10,9 +10,9 @@
 
 - **DDS_Sine** - DDS sinewave generator
 - **DDS_Sine2** - DDS sinewave generator with linear interpolation
-- **IFFT_Gong** - Spectral gong base a fast fourier transform
-- **IFFT_Glass** - Spectral glass cluster base a fast fourier transform
-- **IFFT_Crystal** - Spectral crystal cluster base a fast fourier transform
+- **IFFT_Gong** - Spectral gong basd a fast fourier transform
+- **IFFT_Glass** - Spectral glass cluster based a fast fourier transform
+- **IFFT_Crystal** - Spectral crystal cluster based a fast fourier transform
 - **Chiptune_Play** - Chiptune player engine
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **Pokey_Like** - Atari Pokey like chiptune generator
