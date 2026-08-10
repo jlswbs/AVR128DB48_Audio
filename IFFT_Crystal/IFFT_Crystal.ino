@@ -1,4 +1,4 @@
-// IFFT spectral glass engine //
+// IFFT spectral crystal engine //
 
 #define SAMPLE_RATE 24000
 
@@ -166,42 +166,89 @@ void setup() {
 
 void loop() {
 
-    if (random(100) < 40) {
+    if (random(100) < 16) {
 
-        int bin = random(1, N / 2);
-        
-        switch (random(6)) {
+        int bin = random(1, N / 4);
+
+        switch (random(8)) {
             case 0:
-                bin_amplitudes[bin] += random(0, 512);
+                bin_amplitudes[bin] += random(25, 150);
                 break;
+
             case 1:
-                bin_amplitudes[bin] >>= 1;
+                bin_amplitudes[bin] = (bin_amplitudes[bin] * 92) / 100;
                 break;
+
             case 2:
-                bin_amplitudes[bin] = random(0, 4096);
+                bin_amplitudes[bin] = random(30, 250);
                 break;
+
             case 3:
-                if (bin < N / 2 - 1)
-                    bin_amplitudes[bin + 1] += bin_amplitudes[bin] >> 1;
+                if (bin * 2 < N / 2) {
+                  bin_amplitudes[bin * 2] += bin_amplitudes[bin] / 3;
+                }
                 break;
+
             case 4:
-                if (bin > 2)
-                    bin_amplitudes[bin - 1] += bin_amplitudes[bin] >> 1;
+                if (bin > 2 && bin % 2 == 0) {
+                    bin_amplitudes[bin / 2] += bin_amplitudes[bin] / 7;
+                }
                 break;
+
             case 5:
-                bin_amplitudes[bin] = 0;
+                for (int i = 0; i < N / 4; i++) {
+                    bin_amplitudes[i] = (bin_amplitudes[i] * 90) / 100;
+                }
+                break;
+
+            case 6:
+                if (bin * 5 / 4 < N / 2) {
+                    bin_amplitudes[bin * 5 / 4] += bin_amplitudes[bin] / 9;
+                }
+                break;
+
+            case 7:
+                int start_bin = random(1, N / 4);
+                for (int i = 0; i < 5; i++) {
+                    if (start_bin + i < N / 2) {
+                        bin_amplitudes[start_bin + i] = (bin_amplitudes[start_bin + i] * 98) / 100;
+                    }
+                }
                 break;
         }
-        
-        for (int i = 0; i < N / 2; i++) {
 
+        for (int i = 0; i < N / 2; i++) {
             if (bin_amplitudes[i] > 0) {
-                bin_amplitudes[i] = (bin_amplitudes[i] * 86) / 100;
+                int decay;
+                if (i < 12) decay = 96;
+                else if (i < 50) decay = 92;
+                else decay = 88;
+                bin_amplitudes[i] = (bin_amplitudes[i] * decay) / 100;
                 if (bin_amplitudes[i] < 5) bin_amplitudes[i] = 0;
             }
-
         }
+    }
 
+    if (random(300) < 2) {
+        int center = random(4, 35);
+        int strength = random(30, 150);
+
+        for (int i = -4; i <= 4; i++) {
+            int bin = center + i;
+            if (bin > 0 && bin < N / 2) {
+                int spread = 5 - abs(i);
+                bin_amplitudes[bin] += (strength * spread) / 8;
+            }
+        }
+    }
+
+    if (random(400) < 4) {
+        int bin = random(15, 50);
+        bin_amplitudes[bin] += random(20, 80);
+
+        if (bin * 2 < N / 2) {
+            bin_amplitudes[bin * 2] += random(30, 100);
+        }
     }
 
     if (buffer_needs_calc) {
