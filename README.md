@@ -10,17 +10,22 @@
 
 - **DDS_Sine** - DDS sinewave generator
 - **DDS_Sine2** - DDS sinewave generator with linear interpolation
+- 
 - **IFFT_Gong** - Spectral gong based a fast fourier transform
 - **IFFT_Glass** - Spectral glass cluster based a fast fourier transform
 - **IFFT_Crystal** - Spectral crystal cluster based a fast fourier transform
+- 
 - **Chiptune_Play** - Chiptune player engine
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
 - **Pokey_Like** - Atari Pokey like chiptune generator
 - **MOD_Player** - Amiga Module player
 - **Chip_Glitch** - Chip glitch sound engine with reverse delay
+- 
 - **DSP_Granulator** - Random granular glitch cluster
 - **DSP_GrainPhase** - Granular phase-distortion glitch
+- 
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
 - **Kick_Fold** - Kick drum synth with wavefolder
+- 
 - **Grain_Sampler** - Grain sampler with comb delay
