@@ -29,33 +29,48 @@ void triggerKick() {
 
 void setup() {
 
-  randomSeed(analogRead(A0));
+  PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+  VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+  ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+  ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+  ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t entropy = ADC0.RES;
 
-  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-  //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-  VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
-  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+  randomSeed(entropy);
 
   for (int i = 0; i < SIZE; i++) {
     float t = (float)i / SIZE * 2 * PI;
     float noise = ((random(0, 1000) / 500.0f) - 1.0f) * 0.2f;
-    table[i] = (uint16_t)(512.0f + 511.0f * tanhf((sinf(t) * (1.0f + noise))));
+    table[i] = (uint16_t)(512.0f + 511.0f * tanhf(sinf(t) * (1.0f + noise)));
   }
 
-  TCB0.CTRLA = 0; 
-  TCB0.CTRLB = TCB_CNTMODE_INT_gc; 
-  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1; 
-  TCB0.INTCTRL = TCB_CAPT_bm; 
+  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
+  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+
+  PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+  OPAMP.TIMEBASE = 23; 
+  OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+  OPAMP.OP0SETTLE = 0x7F; 
+  OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
+
+  TCB0.CTRLA = 0;
+  TCB0.CTRLB = TCB_CNTMODE_INT_gc;
+  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1;
+  TCB0.INTCTRL = TCB_CAPT_bm;
   TCB0.CTRLA = TCB_ENABLE_bm | TCB_CLKSEL_CLKDIV1_gc;
 
 }
 
 void loop() {
 
-  float randomPitchFreq = 40.0f + (rand() % 50);
+  float randomPitchFreq = random(40, 90);
   currentPhaseInc = frequencyToIncrement(randomPitchFreq);
-  ampDecayCoeff = 32730 + (rand() % 28);
-  folderParam = 1 + (rand() % 10);
+  ampDecayCoeff = 32730 + random(0, 28);
+  folderParam = random(1, 10);
 
   triggerKick();
   
