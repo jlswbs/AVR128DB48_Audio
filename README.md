@@ -24,7 +24,7 @@
 - **Chip_Glitch** - Chip glitch sound engine with reverse delay
 - 
 - **DSP_Granulator** - Random granular glitch cluster
-- **DSP_GrainPhase** - Granular phase distortion glitch
+- **DSP_GrainPhase** - Granular phase distortion drone
 - 
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
