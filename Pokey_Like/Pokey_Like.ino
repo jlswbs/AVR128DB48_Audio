@@ -1,7 +1,5 @@
 // Atari Pokey like generator //
 
-#include <Arduino.h>
-
 #define SAMPLE_RATE 44100
 #define POKEY_CHANNELS 4
 
@@ -27,26 +25,42 @@ const uint16_t scale[] = {
 
 uint32_t lastTick = 0;
 uint32_t lastDrum = 0;
+uint32_t lastHat = 0;
 uint32_t lastDecay = 0;
 
 void setup() {
 
-  randomSeed(analogRead(0));
+  PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+  VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+  ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+  ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+  ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t entropy = ADC0.RES;
 
-  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-  //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-  VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
-  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+  randomSeed(entropy);
 
   ch[0] = (pokey_chan_t){ 200, 0, 0, 15, MODE_TONE,  0x1FF };
   ch[1] = (pokey_chan_t){ 300, 0, 0, 12, MODE_TONE,  0x1FF };
   ch[2] = (pokey_chan_t){  40, 0, 0,  0, MODE_NOISE, 0x1A5 };
   ch[3] = (pokey_chan_t){ 120, 0, 0,  0, MODE_NOISE, 0x0E7 };
 
-  TCB0.CTRLA = 0; 
-  TCB0.CTRLB = TCB_CNTMODE_INT_gc; 
-  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1; 
-  TCB0.INTCTRL = TCB_CAPT_bm; 
+  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
+  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+
+  PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+  OPAMP.TIMEBASE = 23; 
+  OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+  OPAMP.OP0SETTLE = 0x7F; 
+  OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
+
+  TCB0.CTRLA = 0;
+  TCB0.CTRLB = TCB_CNTMODE_INT_gc;
+  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1;
+  TCB0.INTCTRL = TCB_CAPT_bm;
   TCB0.CTRLA = TCB_ENABLE_bm | TCB_CLKSEL_CLKDIV1_gc;
 
 }
@@ -57,25 +71,25 @@ void loop() {
 
   if (now - lastTick > 120) {
     lastTick = now;
-    ch[0].divider = scale[random(SCALE_LEN)] / 2;
-    ch[0].volume  = random(7, 16);
-
+    ch[0].divider = scale[random(SCALE_LEN)] / 3;
+    ch[0].volume  = random(7, 13);
     ch[1].divider = scale[random(0, SCALE_LEN / 2)] * 2;
-    ch[1].volume  = random(5, 13);
+    ch[1].volume  = random(5, 12);
   }
 
-  if (now - lastDrum > 240) {
-    lastDrum = now;
-    
-    ch[2].divider = random(20, 50);
+  if (now - lastHat > 240) {
+    lastHat = now; 
+    ch[2].divider = random(10, 50);
     ch[2].volume  = 10;
-
-    ch[3].divider = random(100, 200);
-    ch[3].volume  = 13;
-
   }
 
-  if (now - lastDecay > 10) {
+  if (now - lastDrum > 360) {
+    lastDrum = now;
+    ch[3].divider = random(80, 180);
+    ch[3].volume  = 15;
+  }
+
+  if (now - lastDecay > 12) {
     lastDecay = now;
     if (ch[2].volume > 0) ch[2].volume--;
     if (ch[3].volume > 0) ch[3].volume--;
