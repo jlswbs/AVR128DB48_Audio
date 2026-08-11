@@ -10,33 +10,48 @@ uint16_t delay_buffer[DELAY_SIZE];
 volatile uint32_t index = 0;
 volatile uint32_t grain_start = 0;
 volatile uint32_t grain_end = 0;
-volatile uint8_t feedback = 100;
+volatile uint8_t feedback = 0;
 uint16_t delay_index = 0;
 bool direction = false;
 
 void setup() {
 
-  randomSeed(analogRead(A0));
+  PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+  VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+  ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+  ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+  ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t entropy = ADC0.RES;
+
+  randomSeed(entropy);
 
   PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-  //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-  VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
+  VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
   DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
 
-  TCB0.CTRLA = 0; 
-  TCB0.CTRLB = TCB_CNTMODE_INT_gc; 
-  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1; 
-  TCB0.INTCTRL = TCB_CAPT_bm; 
+  PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+  OPAMP.TIMEBASE = 23; 
+  OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+  OPAMP.OP0SETTLE = 0x7F; 
+  OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
+
+  TCB0.CTRLA = 0;
+  TCB0.CTRLB = TCB_CNTMODE_INT_gc;
+  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1;
+  TCB0.INTCTRL = TCB_CAPT_bm;
   TCB0.CTRLA = TCB_ENABLE_bm | TCB_CLKSEL_CLKDIV1_gc;
 
 }
 
 void loop() {
 
-  uint32_t grain_length = random(5, 50) * 22; 
+  uint32_t grain_length = random(2, 50) * 22; 
   uint32_t max_start = sizeof(table) - grain_length;
   grain_start = random(0, max_start);
-  feedback = random(100, 255);
+  feedback = random(100, 250);
   direction = random(0, 2);
 
   noInterrupts();
