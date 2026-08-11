@@ -15,6 +15,7 @@
 - **FFT_Glass** - Spectral glass cluster based a inverse Fast Fourier Transform
 - **FFT_Crystal** - Spectral crystal cluster based a inverse Fast Fourier Transform
 - **DCT_Gong** - Spectral gong based a inverse Discrete Cosine Transform
+- **DHT_Gong** - Spectral gong based a inverse Discrete Hartley Transform
 - 
 - **Chiptune_Play** - Chiptune player engine
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
