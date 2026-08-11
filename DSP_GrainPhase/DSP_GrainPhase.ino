@@ -1,8 +1,8 @@
-// Granular phase-distortion glitch //
+// Granular phase distortion drone //
 
-#define SAMPLE_RATE   22050
+#define SAMPLE_RATE   44100
 #define BUFFER_SIZE   4096
-#define DELAY_BUFFER  1024
+#define DELAY_BUFFER  512
 #define BPM           120
 
 uint16_t audioBuffer[BUFFER_SIZE];
@@ -12,7 +12,7 @@ volatile uint32_t phaseAccumulator = 0;
 volatile uint32_t phaseStep = 0;
 volatile uint16_t delayIndex = 0;
 
-volatile uint8_t feedbackGain = 90;
+volatile uint8_t feedbackGain = 0;
 volatile uint8_t glitchChaos = 0;
 volatile uint16_t chaosModulation = 0;
 
@@ -28,20 +28,35 @@ uint8_t stepCounter = 0;
 
 void setup() {
 
-  randomSeed(analogRead(A0));
+  PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+  VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+  ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+  ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+  ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t entropy = ADC0.RES;
 
-  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-  //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-  VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
-  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+  randomSeed(entropy);
 
   for (int i = 0; i < BUFFER_SIZE; i++) {
     float t = (float)i / BUFFER_SIZE * 2.0f * PI;
     float fm = sinf(t * 3.0f + sinf(t * 7.0f) * 1.5f);
     float noise = ((random(0, 1000) / 500.0f) - 1.0f) * 0.05f;
-    float signal = tanhf(0.8f * (fm + noise));
+    float signal = tanhf(fm + noise);
     audioBuffer[i] = (uint16_t)(512.0f + 511.0f * signal);
   }
+
+  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
+  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+
+  PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+  OPAMP.TIMEBASE = 23; 
+  OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+  OPAMP.OP0SETTLE = 0x7F; 
+  OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
 
   TCB0.CTRLA = 0;
   TCB0.CTRLB = TCB_CNTMODE_INT_gc;
@@ -59,12 +74,12 @@ void loop() {
   float stepCalc = (baseFreq * BUFFER_SIZE) / SAMPLE_RATE;
   phaseStep = (uint32_t)(stepCalc * 256.0f);
 
-  if (stepCounter % 4 == 3 || random(0, 100) > 92) {
-    glitchChaos = random(2, 16);
-    feedbackGain = random(75, 95);
+  if (stepCounter % 4 == 3 || random(0, 100) > 10) {
+    glitchChaos = random(2, 24);
+    feedbackGain = random(50, 70);
   } else {
     glitchChaos = 0;
-    feedbackGain = 85;
+    feedbackGain = 99;
   }
 
   chaosModulation = random(0, 64) * glitchChaos;
