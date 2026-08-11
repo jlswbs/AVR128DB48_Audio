@@ -1,6 +1,6 @@
 // Granular glitch cluster //
 
-#define SAMPLE_RATE   22050
+#define SAMPLE_RATE   44100
 #define BUFFER_SIZE   256 
 #define DELAY_BUFFER  512
 #define WINDOW_EDGE   8
@@ -22,12 +22,16 @@ float flutterPhase = 0.0f;
 
 void setup() {
 
-  randomSeed(analogRead(A0));
+  PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+  VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+  ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+  ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+  ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t entropy = ADC0.RES;
 
-  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-  //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-  VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
-  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+  randomSeed(entropy);
 
   for (int i = 0; i < BUFFER_SIZE; i++) {
     float t = (float)i / BUFFER_SIZE * 2 * PI;
@@ -35,17 +39,28 @@ void setup() {
     audioBuffer[i] = (uint16_t)(512.0f + 511.0f * tanhf(6.0f * (sinf(t) * (1.0f + noise))));
   }
 
-  TCB0.CTRLA = 0; 
-  TCB0.CTRLB = TCB_CNTMODE_INT_gc; 
-  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1; 
-  TCB0.INTCTRL = TCB_CAPT_bm; 
+  PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
+  DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+
+  PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+  OPAMP.TIMEBASE = 23; 
+  OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+  OPAMP.OP0SETTLE = 0x7F; 
+  OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
+
+  TCB0.CTRLA = 0;
+  TCB0.CTRLB = TCB_CNTMODE_INT_gc;
+  TCB0.CCMP = (F_CPU / SAMPLE_RATE) - 1;
+  TCB0.INTCTRL = TCB_CAPT_bm;
   TCB0.CTRLA = TCB_ENABLE_bm | TCB_CLKSEL_CLKDIV1_gc;
 
 }
 
 void loop() {
 
-  uint16_t currentLength = random(16, BUFFER_SIZE);
+  uint16_t currentLength = random(8, BUFFER_SIZE);
   uint16_t baseSpeed = random(64, 1024);
   grainLength = currentLength << 8;
 
