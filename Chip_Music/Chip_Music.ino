@@ -1,7 +1,7 @@
 // 4-voice lo-fi chip music generator //
 
 #define SAMPLE_RATE 8000
-#define BPM 75
+#define BPM 90
 
 volatile uint32_t t = 0;
 volatile uint32_t step_t = 0;
@@ -37,14 +37,29 @@ const uint16_t notes[] = {220, 247, 261, 293, 329, 349, 392, 440};
 
 void setup() {
 
-  randomSeed(analogRead(0));
+  samples_per_step = (uint32_t)SAMPLE_RATE * 60 / BPM / 4;
+
+  PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+  VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+  ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+  ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+  ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+  ADC0.COMMAND = ADC_STCONV_bm;
+  while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+  uint16_t entropy = ADC0.RES;
+
+  randomSeed(entropy);
 
   PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-  //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-  VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
+  VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
   DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
 
-  samples_per_step = (uint32_t)SAMPLE_RATE * 60 / BPM / 4;
+  PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+  OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+  OPAMP.TIMEBASE = 23; 
+  OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+  OPAMP.OP0SETTLE = 0x7F; 
+  OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
 
   TCB0.CTRLA = 0;
   TCB0.CTRLB = TCB_CNTMODE_INT_gc;
