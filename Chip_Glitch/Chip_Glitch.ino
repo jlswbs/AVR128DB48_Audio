@@ -3,7 +3,7 @@
 #include "track.h"
 
 #define SAMPLE_RATE 22050
-#define PLAYROUTINE_HZ 120
+#define PLAYROUTINE_HZ 50
 #define SAMPLES_PER_TICK (SAMPLE_RATE / PLAYROUTINE_HZ)
 #define TRACKLEN 32
 #define SONGDATA_SIZE sizeof(songdata)
@@ -422,13 +422,31 @@ int16_t chiptune_callback() {
 
 void setup() {
 
-    PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
-    //VREF.DAC0REF = VREF_REFSEL_VDD_gc | VREF_ALWAYSON_bm;
-    VREF.DAC0REF = VREF_REFSEL_2V048_gc | VREF_ALWAYSON_bm;
-    DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
-    
+    PORTD.PIN0CTRL = PORT_ISC_INPUT_DISABLE_gc; 
+    VREF.ADC0REF = VREF_REFSEL_VDD_gc; 
+    ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_12BIT_gc;
+    ADC0.CTRLC = ADC_PRESC_DIV16_gc;
+    ADC0.MUXPOS = ADC_MUXPOS_AIN0_gc; 
+    ADC0.COMMAND = ADC_STCONV_bm;
+    while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+    uint16_t entropy = ADC0.RES;
+
+    randomSeed(entropy);
+
+    noiseseed = entropy;
     memcpy(glitchram, songdata, SONGDATA_SIZE);
     initresources();
+    
+    PORTD.PIN6CTRL = PORT_ISC_INPUT_DISABLE_gc;
+    VREF.DAC0REF = VREF_REFSEL_1V024_gc | VREF_ALWAYSON_bm;
+    DAC0.CTRLA = DAC_ENABLE_bm | DAC_OUTEN_bm | DAC_RUNSTDBY_bm;
+
+    PORTD.PIN2CTRL = PORT_ISC_INPUT_DISABLE_gc;
+    OPAMP.CTRLA = OPAMP_ENABLE_bm; 
+    OPAMP.TIMEBASE = 23; 
+    OPAMP.OP0CTRLA = OPAMP_ALWAYSON_bm | OPAMP_OP0CTRLA_OUTMODE_NORMAL_gc;
+    OPAMP.OP0SETTLE = 0x7F; 
+    OPAMP.OP0INMUX = OPAMP_OP0INMUX_MUXPOS_DAC_gc | OPAMP_OP0INMUX_MUXNEG_OUT_gc;
 
     TCB0.CTRLA = 0;
     TCB0.CTRLB = TCB_CNTMODE_INT_gc;
@@ -460,6 +478,6 @@ void loop() {
     uint16_t p = resources[0] + (noiseseed % (SONGDATA_SIZE - resources[0]));
     glitchram[p] ^= 1 << (noiseseed & 7);
 
-    delay(PLAYROUTINE_HZ);
+    delay(PLAYROUTINE_HZ * 2);
 
 }
