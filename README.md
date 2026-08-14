@@ -31,3 +31,4 @@
 - **Kick_Fold** - Kick drum synth with wavefolder
 - 
 - **Grain_Sampler** - Grain sampler with comb delay
+- **Speech_Synth** - Formant speech synthesis
