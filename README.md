@@ -25,6 +25,7 @@
 - 
 - **DSP_Granulator** - Ambient granular glitch cluster
 - **DSP_GrainPhase** - Granular phase distortion drone
+- **DSP_Grainbient** - Meditative granular ambient noodle
 - 
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
