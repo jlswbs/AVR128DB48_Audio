@@ -12,7 +12,7 @@ volatile uint16_t grainPosition = 0;
 volatile uint16_t grainLength = 8 << 8; 
 volatile uint16_t grainSpeed = 1 << 8; 
 volatile uint16_t delayIndex = 0; 
-volatile uint8_t feedbackGain = 93; 
+volatile uint8_t feedbackGain = 92; 
  
 volatile uint16_t nextGrainResetPosition = 0; 
 volatile uint16_t currentDelayMax = DELAY_BUFFER; 
@@ -20,8 +20,8 @@ float wowPhase = 0.0f;
 float flutterPhase = 0.0f; 
  
 uint8_t bbShift1, bbShift2, bbShift3; 
-uint8_t bbMask1, bbMask2; 
-uint8_t bbMul1, bbMul2; 
+uint8_t bbMask1, bbMask2;
+uint8_t bbMul1, bbMul2;
  
 void setup() { 
 
@@ -37,22 +37,19 @@ void setup() {
   randomSeed(entropy); 
  
   bbShift1 = random(2, 6); 
-  bbShift2 = random(6, 10); 
+  bbShift2 = random(4, 10); 
   bbShift3 = random(3, 6); 
   bbMask1  = random(1, 16); 
-  bbMask2  = random(1, 16); 
-  bbMul1   = random(3, 13) | 1; 
+  bbMask2  = random(1, 16);
+  bbMul1   = random(3, 13) | 1;
   bbMul2   = random(1, 8); 
  
   for (int i = 0; i < BUFFER_SIZE; i++) {
 
-    float t = (float)i / BUFFER_SIZE * 2 * PI; 
-    float pureSine = sinf(t) * 0.35f; 
-    uint8_t bytebeat = ((i >> bbShift1) | (i >> bbShift2)) * (i & ((i >> bbShift3) ? bbMask1 : bbMask2)); 
-    bytebeat = (bytebeat * bbMul1) ^ (i >> bbMul2); 
-    float bbComponent = ((float)bytebeat / 128.0f - 1.0f) * 0.65f; 
-    float finalSignal = pureSine + bbComponent; 
-    audioBuffer[i] = (uint16_t)(512.0f + 511.0f * tanhf(2.0f * finalSignal));
+    uint8_t bytebeat = ((i >> bbShift1) | (i >> bbShift2)) * (i & ((i >> bbShift3) ? bbMask1 : bbMask2));
+    bytebeat = (bytebeat * bbMul1) ^ (i >> bbMul2);
+    float finalSignal = ((float)bytebeat / 128.0f - 1.0f);
+    audioBuffer[i] = (uint16_t)(512.0f + 511.0f * tanhf(8.0f * finalSignal));
 
   } 
  
@@ -77,7 +74,7 @@ void setup() {
  
 void loop() {
 
-  uint16_t currentLength = random(4, 256);  
+  uint16_t currentLength = random(8, 224);  
   grainLength = currentLength << 8; 
  
   uint16_t maxStart = BUFFER_SIZE - currentLength; 
@@ -87,20 +84,20 @@ void loop() {
     nextGrainResetPosition = 0; 
   } 
  
-  uint16_t baseSpeed = random(64, 2048); 
+  uint16_t baseSpeed = random(32, 2048); 
  
-  wowPhase += 0.1f;  
+  wowPhase += 0.2f;  
   if (wowPhase > 2 * PI) wowPhase -= 2 * PI; 
   float wowMod = sinf(wowPhase) * 40.0f;  
  
-  flutterPhase += 0.3f; 
+  flutterPhase += 0.4f; 
   if (flutterPhase > 2 * PI) flutterPhase -= 2 * PI; 
   float flutterMod = sinf(flutterPhase) * 4.0f;  
  
   grainSpeed = (uint16_t)((float)baseSpeed + wowMod) << 5;  
   currentDelayMax = (DELAY_BUFFER - 5) + (int16_t)flutterMod; 
  
-  delay(random(1, 20));
+  delay(random(1, 18));
  
 } 
  
