@@ -15,6 +15,7 @@
 - **FFT_Glass** - Spectral glass cluster based a inverse Fast Fourier Transform
 - **FFT_Crystal** - Spectral crystal cluster based a inverse Fast Fourier Transform
 - **FFT_Fragments** - Spectral fragments cluster based a inverse Fast Fourier Transform
+- **FFT_Nature** - Spectral nature cluster based a inverse Fast Fourier Transform
 - **DCT_Gong** - Spectral gong based a inverse Discrete Cosine Transform
 - **DHT_Gong** - Spectral gong based a inverse Discrete Hartley Transform
 - 
