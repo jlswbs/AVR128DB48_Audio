@@ -1,9 +1,10 @@
 // Inverse FFT spectral smearing drone //
 
-#define SAMPLE_RATE 22050
+#define SAMPLE_RATE 24000
 
 #define LOG2_N 7
 #define N (1 << LOG2_N)
+#define BIN_SMEAR 9
 
 static int16_t sin_table_q15[257];
 
@@ -111,14 +112,14 @@ void calculate_next(int16_t* real_q15) {
             phase_accumulator[bin] += (uint32_t)bin << LOG2_N;
             phase_accumulator[bin] &= 1023;
 
-            uint16_t lfo_time = (smear_clock * (bin + 3)) >> 2; 
+            uint16_t lfo_time = (smear_clock * (bin + 3)) >> 6; 
             uint16_t smear_idx = (lfo_time + (bin * 17)) & 1023;
             
             int16_t smear_cos, smear_sin;
             get_twiddle(smear_idx, &smear_cos, &smear_sin);
 
             uint32_t positive_sin = (uint32_t)smear_sin + 32768;
-            uint16_t phase_deviation = (positive_sin >> 10);
+            uint16_t phase_deviation = (positive_sin >> BIN_SMEAR);
             uint16_t smeared_phase = (phase_accumulator[bin] + phase_deviation) & 1023;
  
             int16_t cos_p, sin_p;
@@ -152,8 +153,8 @@ void setup() {
     randomSeed(entropy);
 
     for (int i = 0; i < 256; i++) {
-        float x = (float)i / 256.0f;
-        sin_table_q15[i] = (int16_t)(x * (2.0f - x) * 32767.0f);
+        float angle = (2.0f * M_PI * (float)i) / 1024.0f;
+        sin_table_q15[i] = (int16_t)(sinf(angle) * 32767.0f);
     }
 
     sin_table_q15[256] = 32767;
@@ -183,9 +184,9 @@ void loop() {
     drone_time++;
 
     float lfo_sub1 = sinf(drone_time * 0.0015f);
-    float lfo_sub2 = sinf(drone_time * 0.12f + 1.0f);
+    float lfo_sub2 = sinf(drone_time * 0.012f + 1.0f);
     
-    int16_t sub_amp1 = (int16_t)((lfo_sub1 * 0.3f + 0.7f) * 750);
+    int16_t sub_amp1 = (int16_t)((lfo_sub1 * 0.3f + 0.7f) * 700);
     int16_t sub_amp2 = (int16_t)((lfo_sub2 * 0.4f + 0.6f) * 550);
     
     bin_amplitudes[1] = sub_amp1;
