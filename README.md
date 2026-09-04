@@ -19,6 +19,7 @@
 - **FFT_Mystery** - Spectral mystery cluster based a inverse Fast Fourier Transform
 - **FFT_Transmission** - Spectral transmission cluster based a inverse Fast Fourier Transform
 - **FFT_SmearDrone** - Spectral smearing drone based a inverse Fast Fourier Transform
+- **FFT_ShiftChimes** - Spectral shift chimes based a inverse Fast Fourier Transform
 - **DCT_Gong** - Spectral gong based a inverse Discrete Cosine Transform
 - **DHT_Gong** - Spectral gong based a inverse Discrete Hartley Transform
 - 
