@@ -37,7 +37,7 @@
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
 - **Kick_Fold** - Kick drum synth with wavefolder
-- **Kick_FM** - Kick drum FM synth
+- **Kick_FM** - FM kick drum synth
 - 
 - **Grain_Sampler** - Grain sampler with comb delay
 - **Speech_Synth** - Formant speech synthesis
