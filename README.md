@@ -23,6 +23,7 @@
 - **FFT_RandBalls** - Spectral random balls based a inverse Fast Fourier Transform
 - **FFT_CombEcho** - Spectral comb echo based a inverse Fast Fourier Transform
 - **FFT_CombMetal** - Spectral comb metal based a inverse Fast Fourier Transform
+- **FFT_GlitchWaves** - Spectral glitch waves based a inverse Fast Fourier Transform
 -  
 - **DCT_Gong** - Spectral gong based a inverse Discrete Cosine Transform
 - **DHT_Gong** - Spectral gong based a inverse Discrete Hartley Transform
