@@ -46,6 +46,7 @@
 - **Kick_FM** - FM kick drum synth
 - **Kick_Crush** - Karplus-Strong based kick drum with crusher
 - **Kick_Pulse** - Karplus-Strong based kick pulse drum
+- **Kick_HiHat** - Karplus-Strong based kick drum and hihat
 - 
 - **Grain_Sampler** - Grain sampler with comb delay
 - **Speech_Synth** - Formant speech synthesis
