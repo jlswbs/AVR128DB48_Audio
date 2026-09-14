@@ -73,8 +73,8 @@ void setup() {
 void loop() {
 
   float randomPitchFreq = random(40, 90);
-  feedbackGain = 20000 + random(0, 8500);
-  pulse = random(0, 12);
+  feedbackGain = 20500 + random(0, 8500);
+  pulse = random(1, 14);
 
   triggerKick(randomPitchFreq);
 
