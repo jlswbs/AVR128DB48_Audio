@@ -44,6 +44,7 @@
 - **Kick_Drive** - Kick drum synth with drive
 - **Kick_Fold** - Kick drum synth with wavefolder
 - **Kick_FM** - FM kick drum synth
+- **Kick_Crush** - Karplus-Strong based kick drum with crusher
 - 
 - **Grain_Sampler** - Grain sampler with comb delay
 - **Speech_Synth** - Formant speech synthesis
