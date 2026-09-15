@@ -27,6 +27,7 @@
 -  
 - **DCT_Gong** - Spectral gong based a inverse Discrete Cosine Transform
 - **DHT_Gong** - Spectral gong based a inverse Discrete Hartley Transform
+- **WHT_Gong** - Spectral gong based a inverse Walsh-Hadamard Transform
 - 
 - **Chiptune_Play** - Chiptune player engine
 - **Chip_Music** - 4-voice lo-fi chip music generator and synthesizer
