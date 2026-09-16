@@ -1,6 +1,6 @@
 // Inverted WHT (Walsh-Hadamard) spectral gong engine //
 
-#define SAMPLE_RATE 24000
+#define SAMPLE_RATE 44100
 
 #define LOG2_N 7
 #define N (1 << LOG2_N)
@@ -97,42 +97,34 @@ void setup() {
 
 void loop() {
 
-    if (random(2000) < 1) { 
-
-        int density = random(20, 80);
-
+    if (random(2500) < 1) { 
+        int density = random(50, 90); 
         for (int i = 1; i < N; i++) {
-
             if (random(100) < density) {
-                int16_t amp = random(32, 1024) / i;
+                int16_t amp = random(16, 500) / (1 + (i / 16)); 
+                
                 bin_amplitudes[i] = (random(100) > 50) ? amp : -amp;
             }
-
         }
-
     }
 
     if (millis() - last_decay >= 10) { 
-
         last_decay = millis();
 
         for (int i = 0; i < N; i++) {
-
             if (bin_amplitudes[i] != 0) {
-                bin_amplitudes[i] = (int32_t)bin_amplitudes[i] * 98 / 100;
+                int decay_factor = 99 - (i >> 3); 
+                if (decay_factor < 85) decay_factor = 85;
+                bin_amplitudes[i] = (int32_t)bin_amplitudes[i] * decay_factor / 100;
                 if (abs(bin_amplitudes[i]) < 5) bin_amplitudes[i] = 0;
             }
-
         }
-
     }
 
     if (buffer_needs_calc) {
-
         if (active_buffer == 0) { calculate_next(audio_buffer_1); }
-        else { calculate_next(audio_buffer_0); }
+        else                    { calculate_next(audio_buffer_0); }
         buffer_needs_calc = false;
-
     }
 
 }
