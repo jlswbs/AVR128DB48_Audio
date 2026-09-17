@@ -26,8 +26,8 @@
 - **FFT_GlitchWaves** - Spectral glitch waves based a inverse Fast Fourier Transform
 -  
 - **DCT_Gong** - Spectral gong based a inverse Discrete Cosine Transform
-- 
 - **DHT_Gong** - Spectral gong based a inverse Discrete Hartley Transform
+- **IHT_Gong** - Spectral gong based a inverse Haar Transform
 - 
 - **WHT_Gong** - Spectral gong based a inverse Walsh-Hadamard Transform
 - **WHT_Coruptor** - Spectral particle coruptor based a inverse Walsh-Hadamard Transform
