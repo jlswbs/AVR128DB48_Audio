@@ -43,6 +43,7 @@
 - **DSP_Grainbient** - Meditative granular ambient noodle
 - **DSP_GrainEcho** - Granular ambient echo drone
 - **DSP_Particlator** - Particle grain cluster
+- **DSP_MetalAP** - All-pass metalloid drum engine
 - 
 - **Drum_Electro** - Electro drum sample machine
 - **Kick_Drive** - Kick drum synth with drive
